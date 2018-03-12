@@ -1,6 +1,7 @@
 import copy
 import random
 
+
 def read_field(path):
     field = dict()
     with open(path, 'r', encoding='utf-8') as f:
@@ -116,6 +117,7 @@ def frame(field, ship):
 
 
 def generate_field():
+    shipses = []
     field = []
     for numb in range(1, 11):
         line = []
@@ -130,7 +132,6 @@ def generate_field():
         what_line = random.choice(field)
         point = random.choice(what_line)
         what_way = random.choice(way)
-        new_field = copy.copy(field)
         while True:
             try:
                 if what_way == 'vertical':
@@ -138,6 +139,7 @@ def generate_field():
                         what_line = random.choice(field)
                         point = random.choice(what_line)
                     delete = []
+                    shipses.append([point, (1, ship), False, []])
                     while size != ship:
                         what_line.insert(what_line.index(point), '*')
                         delete.append(point)
@@ -146,12 +148,15 @@ def generate_field():
                         point = tuple(point)
                         what_line = field[point[1] - 1]
                         size += 1
+
                     field = frame(field, delete)
                 else:
-                    while point == "*" or point == ' ' or ord(point[0]) - 97 + ship > 10:
+                    while point == "*" or point == ' ' or ord(
+                            point[0]) - 97 + ship > 10:
                         what_line = random.choice(field)
                         point = random.choice(what_line)
                     delete = []
+                    shipses.append([point, (ship, 1), True, []])
                     while size != ship:
                         what_line.insert(what_line.index(point), '*')
                         delete.append(point)
@@ -159,11 +164,11 @@ def generate_field():
                         point = [chr(ord(point[0]) + 1), point[1]]
                         point = tuple(point)
                         size += 1
+
                     field = frame(field, delete)
             except:
                 generate_field()
             break
-    print()
     norm_field = []
     for line in field:
         new_line = []
@@ -172,17 +177,115 @@ def generate_field():
                 new_line.append(' ')
             else:
                 new_line.append('*')
-        print(new_line)
+        norm_field.append(new_line)
+    return norm_field, shipses
+
+
+class Field:
+    def __init__(self):
+        def generate_field():
+            shipses = []
+            field = []
+            for numb in range(1, 11):
+                line = []
+                for letter in range(10):
+                    coor = tuple([chr(letter + 97), numb])
+                    line.append(coor)
+                field.append(line)
+            ships = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
+            for ship in ships:
+                size = 0
+                way = ['horizontal', 'vertical']
+                what_line = random.choice(field)
+                point = random.choice(what_line)
+                what_way = random.choice(way)
+                while True:
+                    try:
+                        if what_way == 'vertical':
+                            while point == "*" or point == ' ' or point[
+                                1] + ship > 10:
+                                what_line = random.choice(field)
+                                point = random.choice(what_line)
+                            delete = []
+                            shipses.append([point, (1, ship), False, []])
+                            while size != ship:
+                                what_line.insert(what_line.index(point), '*')
+                                delete.append(point)
+                                what_line.remove(point)
+                                point = [point[0], point[1] + 1]
+                                point = tuple(point)
+                                what_line = field[point[1] - 1]
+                                size += 1
+
+                            field = frame(field, delete)
+                        else:
+                            while point == "*" or point == ' ' or ord(
+                                    point[0]) - 97 + ship > 10:
+                                what_line = random.choice(field)
+                                point = random.choice(what_line)
+                            delete = []
+                            shipses.append([point, (ship, 1), True, []])
+                            while size != ship:
+                                what_line.insert(what_line.index(point), '*')
+                                delete.append(point)
+                                what_line.remove(point)
+                                point = [chr(ord(point[0]) + 1), point[1]]
+                                point = tuple(point)
+                                size += 1
+
+                            field = frame(field, delete)
+                    except:
+                        generate_field()
+                    break
+            norm_field = []
+            for line in field:
+                new_line = []
+                for elem in line:
+                    if elem != '*':
+                        new_line.append(' ')
+                    else:
+                        new_line.append('*')
+                norm_field.append(new_line)
+            return norm_field, shipses
+
+        norm_field, ships = generate_field()
+        self.ships = []
+        for ship in ships:
+            shp = Ship(ship[0], ship[2], ship[1], ship[3])
+            self.ships.append(shp)
+
+
+class Ship:
+    def __init__(self, bow, horizontal, lenght, hit):
+        self.bow = bow
+        self.horizontal = horizontal
+        self.__length = lenght
+        self.__hit = hit[:]
+
+
+class Game:
+    def __init__(self):
+        self.__fields = [Field(), Field()]
+        name1 = input("Enter first player name: ")
+        name2 = input("Enter second player name: ")
+        self.__players = [Player(name1), Player(name2)]
+        self.__current_player = 1
+
+
+class Player:
+    id = 1
+
+    def __init__(self, name):
+        self.name = name
+        self.id = Player.id
+        Player.id += 1
+
+    def read_position(self):
+        pass
 
 
 def main():
-    field = read_field('field.txt')
-    # print(field)
-    # print(has_ship(field, ("b1")))
-    # print(ship_size(field, "j10"))
-    # print(is_valid(field))
-    generate_field()
-
+    game = Game()
 
 
 main()
