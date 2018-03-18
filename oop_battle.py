@@ -67,14 +67,14 @@ def ship_size(field, coordinate):
         while True:
             try:
                 while only_ships[str(chr(ord(coordinate[0]) - i) +
-                                coordinate[1])] == '*':
+                                 coordinate[1])] == '*':
                     length += 1
                     i += 1
             except KeyError:
                 i = 1
                 try:
                     while only_ships[str(chr(ord(coordinate[0]) + i) +
-                                    coordinate[1])] == '*':
+                                     coordinate[1])] == '*':
                         length += 1
                         i += 1
                 except KeyError:
@@ -168,8 +168,8 @@ class Field:
                 while True:
                     try:
                         if what_way == 'vertical':
-                            while point == "*" or point == ' ' or point[
-                                1] + ship > 10:
+                            while point == "*" \
+                                    or point == ' ' or point[1] + ship > 10:
                                 what_line = random.choice(field)
                                 point = random.choice(what_line)
                             delete = []
@@ -249,7 +249,8 @@ class Game:
         Initialize two players
         '''
         self.__fields = [Field(), Field()]
-        name1, name2 = input("Enter first player name: "), input("Enter second player name: ")
+        name1 = input("Enter first player name: ")
+        name2 = input("Enter second player name: ")
         self.__players = [Player(name1), Player(name2)]
         self.__current_player = 1
 
@@ -270,6 +271,10 @@ class Player:
 
 
 def main():
+    '''
+    A boss
+    :return: None
+    '''
     game = Game()
 
 main()
